@@ -1,4 +1,5 @@
 import 'package:brew_crew/services/auth.dart';
+import 'package:brew_crew/shared/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -46,6 +47,7 @@ class _SignInState extends State<SignIn> {
               children: <Widget>[
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  decoration: textInputDecoration.copyWith(hintText: 'Email'),
                   validator: (val) =>
                       !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                               .hasMatch(val!)
@@ -59,6 +61,8 @@ class _SignInState extends State<SignIn> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
+                  decoration:
+                      textInputDecoration.copyWith(hintText: 'Password'),
                   validator: (val) =>
                       val!.length < 6 ? 'Enter a password 6+ chars long' : null,
                   obscureText: true,
