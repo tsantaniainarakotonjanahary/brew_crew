@@ -12,10 +12,12 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  //final AuthService _auth = AuthService();
+  final _formKey = GlobalKey<FormState>();
+  final AuthService _auth = AuthService();
 
   String email = '';
   String password = '';
+  String error = '';
 
   @override
   Widget build(BuildContext context) {
@@ -39,44 +41,69 @@ class _SignInState extends State<SignIn> {
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
         child: Form(
+            key: _formKey,
             child: Column(
-          children: <Widget>[
-            const SizedBox(height: 20.0),
-            TextFormField(
-              onChanged: (val) {
-                setState(() {
-                  email = val;
-                });
-              },
-            ),
-            const SizedBox(height: 20.0),
-            TextFormField(
-              obscureText: true,
-              onChanged: (val) {
-                setState(() {
-                  password = val;
-                });
-              },
-            ),
-            const SizedBox(height: 20.0),
-            MaterialButton(
-              color: Colors.pink[400],
-              onPressed: () async {
-                if (kDebugMode) {
-                  print(email);
-                }
-                if (kDebugMode) {
-                  print(password);
-                }
-              },
-              textColor: Colors.red,
-              child: const Text(
-                'Sign in ',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        )),
+              children: <Widget>[
+                const SizedBox(height: 20.0),
+                TextFormField(
+                  validator: (val) =>
+                      !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(val!)
+                          ? 'Enter a valid email'
+                          : null,
+                  onChanged: (val) {
+                    setState(() {
+                      email = val;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20.0),
+                TextFormField(
+                  validator: (val) =>
+                      val!.length < 6 ? 'Enter a password 6+ chars long' : null,
+                  obscureText: true,
+                  onChanged: (val) {
+                    setState(() {
+                      password = val;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20.0),
+                MaterialButton(
+                  color: Colors.pink[400],
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (kDebugMode) {
+                        print(email);
+                      }
+
+                      if (kDebugMode) {
+                        print(password);
+                      }
+
+                      dynamic result = await _auth.signInWithEmailAndPassword(
+                          email, password);
+
+                      if (result == null) {
+                        setState(() {
+                          error = 'could not sign in with those credentials';
+                        });
+                      }
+                    }
+                  },
+                  textColor: Colors.red,
+                  child: const Text(
+                    'Sign in ',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(
+                  height: 12.0,
+                ),
+                Text(error,
+                    style: const TextStyle(color: Colors.red, fontSize: 14.0)),
+              ],
+            )),
       ),
     );
   }
